@@ -380,7 +380,7 @@ private:
     end_ = start_ + n;
   }
   
-  iterator binarySearch(iterator low, iterator high, key_type & x)
+  iterator binarySearch(iterator low, iterator high, const key_type & x)
   {
     if(high >= low)
     {
