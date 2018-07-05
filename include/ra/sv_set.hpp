@@ -317,9 +317,7 @@ public:
   void swap ( sv_set& x) noexcept(
   std::is_nothrow_swappable_v<value_type>)
   {
-    sv_set tmp(x);
-    x = this;
-    this = tmp;
+    std::swap(this,x);
   }
 
   // Erases any elements in the container, yielding an empty
