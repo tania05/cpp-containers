@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <memory>
+#include <algorithm>
 
 
 namespace ra::container {
@@ -311,6 +312,16 @@ public:
     }
     return end();
   }
+
+  // // Swaps the contents of the container with the contents of the
+  // // container x.
+  // void swap ( sv_set& x) noexcept(
+  // std::is_nothrow_swappable_v<value_type>)
+  // {
+  //   sv_set tmp(x);
+  //   x = this;
+  //   this = tmp;
+  // }
 
   // Swaps the contents of the container with the contents of the
   // container x.
