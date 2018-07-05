@@ -284,22 +284,30 @@ public:
   // end() otherwise.
   iterator erase ( const_iterator pos )
   {
+    iterator itr = start_;
     std::destroy_at(pos);
-    iterator it = &(*pos);
+    
+    //catch up to where the position is referrring
+    while(itr != pos)
+    {
+      ++itr;
+    }
+
+    iterator elem_itr = itr;
 
     //before it reaches finish-1 (since that's the last element)
     //shift elements left, so fill void
-    while(it != end()-1)
+    while(itr != end()-1)
     {
-      std::uninitialized_fill_n(it, 1, *++it);
+      std::uninitialized_fill_n(itr, 1, *++itr);
     }
 
    --finish_;
 
     //check if the folowing value exists
-    if(pos != nullptr)
+    if(elem_itr != nullptr)
     {
-      return &(*pos);
+      return elem_itr;
     }
     return end();
   }
