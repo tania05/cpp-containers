@@ -105,7 +105,7 @@ public:
         start_ = other.start_;
         other.start_ = nullptr;
         finish_ = other.finish_;
-        other.finish = nullptr;
+        other.finish_ = nullptr;
         end_ = other.end_;
         other.end_ = nullptr;
       }
