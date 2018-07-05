@@ -318,13 +318,13 @@ public:
   void swap ( sv_set& x) noexcept(
   std::is_nothrow_swappable_v<value_type>)
   {
-    sv_set tmp(this);
-    start_ = x.start_;
-    x.start_ = tmp.start_;
-    end_ = x.end_;
-    x.end_ = tmp.end_;
-    finish_ = x.finish_;
-    x.finish_ = tmp.finish_;
+    sv_set tmp(x);
+    x.start_ = start_;
+    start_ = tmp.start_;
+    x.end_ = end_;
+    end_ = tmp.end_;
+    x.finish_ = finish_;
+    finish_ = tmp.finish_;
   }
 
   // // Swaps the contents of the container with the contents of the
