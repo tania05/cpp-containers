@@ -384,7 +384,7 @@ private:
   {
     if(high >= low)
     {
-      iterator mid = low + (high -1)/2;
+      auto mid = low + (high -low)/2;
 
       //check if the element is found
       if(*mid == x)
