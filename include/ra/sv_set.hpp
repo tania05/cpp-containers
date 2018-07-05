@@ -67,7 +67,7 @@ public:
     end_ = start_ + n;
     try
     {
-      finish_ = std::uninitialized_copy(first, first + n, start_);
+      finish_ = std::uninitialized_copy_n(first, n, start_);
     } catch(...)
     {
       ::operator delete(start_);
