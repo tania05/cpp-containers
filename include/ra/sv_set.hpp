@@ -313,23 +313,27 @@ public:
     return end();
   }
 
-  // // Swaps the contents of the container with the contents of the
-  // // container x.
-  // void swap ( sv_set& x) noexcept(
-  // std::is_nothrow_swappable_v<value_type>)
-  // {
-  //   sv_set tmp(x);
-  //   x = this;
-  //   this = tmp;
-  // }
-
   // Swaps the contents of the container with the contents of the
   // container x.
   void swap ( sv_set& x) noexcept(
   std::is_nothrow_swappable_v<value_type>)
   {
-    std::swap(this,x);
+    sv_set tmp(this);
+    start_ = x.start_;
+    x.start_ = tmp.start_;
+    end_ = x.end_;
+    x.end_ = tmp.end_;
+    finish_ = x.finish_;
+    x.finish_ = tmp.finish_;
   }
+
+  // // Swaps the contents of the container with the contents of the
+  // // container x.
+  // void swap ( sv_set& x) noexcept(
+  // std::is_nothrow_swappable_v<value_type>)
+  // {
+  //   std::swap(this,x);
+  // }
 
   // Erases any elements in the container, yielding an empty
   // container.
