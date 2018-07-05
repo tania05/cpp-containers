@@ -285,7 +285,7 @@ public:
   iterator erase ( const_iterator pos )
   {
     std::destroy_at(pos);
-    const_iterator it = pos;
+    iterator it = &(*pos);
 
     //before it reaches finish-1 (since that's the last element)
     //shift elements left, so fill void
@@ -297,9 +297,9 @@ public:
    --finish_;
 
     //check if the folowing value exists
-    if(*pos != nullptr)
+    if(pos != nullptr)
     {
-      return pos;
+      return &(*pos);
     }
     return end();
   }
