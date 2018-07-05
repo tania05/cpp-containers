@@ -285,7 +285,7 @@ public:
   iterator erase ( const_iterator pos )
   {
     std::destroy_at(pos);
-    iterator it = pos;
+    const_iterator it = pos;
 
     //before it reaches finish-1 (since that's the last element)
     //shift elements left, so fill void
