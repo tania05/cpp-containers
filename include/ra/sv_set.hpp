@@ -370,14 +370,8 @@ public:
     iterator first = std::lower_bound(start_, finish_, k, Compare());
 
     if( first != finish_)
-    {
-      if(!(Compare()(k, *first)))
-      {
-        return first;        
-      }
-      else{
-        return end();
-      }
+    {if(!(Compare()(k, *first))){ return first;}
+    else{return end();}
     }
     return end();
   }
