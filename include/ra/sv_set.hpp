@@ -300,9 +300,9 @@ public:
   iterator erase ( const_iterator pos )
   {
     iterator iter = find(*pos);
-      std::cout << "Constructor done1" << std::endl;  
+      // std::cout << "Constructor done1" << std::endl;  
   
-    std::cout << "Constructor done2" << std::endl;
+    // std::cout << "Constructor done2" << std::endl;
     
     std::destroy_at(iter);
     std::cout << *iter << std::endl;  
@@ -313,13 +313,13 @@ public:
     //Question - if we use move, do we have to worry about destryoing elements?
     //shift elements left, so fill void
     std::move(iter+1, finish_, iter);
-    std::cout << "Constructor done3" << std::endl;  
+    // std::cout << "Constructor done3" << std::endl;  
 
     std::destroy_at(finish_);
-  std::cout << "Constructor done4" << std::endl;  
+  // std::cout << "Constructor done4" << std::endl;  
 
    --finish_;
-  std::cout << "Constructor done5" << std::endl;  
+  // std::cout << "Constructor done5" << std::endl;  
 
     //check if the folowing value exists
     if(iter != nullptr)
