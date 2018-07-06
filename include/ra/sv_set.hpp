@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
+#include <cassert>
 
 
 namespace ra::container {
@@ -74,7 +75,6 @@ public:
       ::operator delete(start_);
       throw;
     }
-
   }
   // Move construction.
   // Creates a new set by moving from the specified set other.
@@ -211,17 +211,10 @@ public:
   // container is already at least n.
   void reserve ( size_type n )
   {
-    start_ = static_cast<Key*>(::operator new(n * sizeof(Key)));
-    end_ = start_ + n;
-    try 
+    if(capacity() < n)
     {
-      std::uninitialized_default_construct_n(start_, n);
-    }catch (...) 
-    {
-      ::operator delete(start_);
-      throw;
+      grow(n);
     }
-    finish_ = end_;
   }
 
   // Reduces the capacity of the container to the container size.
@@ -229,11 +222,20 @@ public:
   // the capacity is reduced to the size of the container.
   // Calling this function has no effect if the capacity of the
   // container does not exceed its size.
+  // void shrink_to_fit ()
+  // {
+  //   if(capacity() > size())
+  //   {
+  //       end_ = finish_; 
+  //   }
+  // }
+
+  //TODO: ask the prof if we need to make a new one 
   void shrink_to_fit ()
   {
     if(capacity() > size())
     {
-        end_ = finish_; 
+        grow(size()); 
     }
   }
 
@@ -250,25 +252,44 @@ public:
   // and first elements set to false and end(), respectively.
   std::pair<iterator,bool> insert (const key_type & x )
   {
+    //empty contaner, make space for at least one element
+    // if(size() == 0)
+    // {
+    //   reserve(1);
+    // }
+
     // check if there is enough storage to put more elements
-    if(finish_ = end_)
+      // std::cout << "Found empty container" << std::endl;
+    
+    if(finish_ == end_)
     {
-      grow(2 * capacity());
+      // std::cout << "Found empty container" << std::endl;
+      grow(2 * capacity() + 1);
     }
+
+    // assert(size() == 0);
+    // assert(capacity() == 1);
+
     //no element found
-    if(find(x) != end())
+    if(find(x) == end())
     {
-      //to be sued for finding where to put the element
+      //to be used for finding where to put the element
       iterator pos = start_;
 
       //while not reaching at the end of the container
-      while(pos!= end())
+      while(pos!= end() && Compare()(*pos,x) )
       {
         ++pos;
       }
 
+      // std::cout << "found pos" << std::endl;
+      // std::cout << *pos << std::endl;
+      
+      //shift elements to make room for the element
+      std::move_backward(pos, finish_, finish_+1);
+
       //insert element at that location
-      std::uninitialized_fill_n(pos, 1, x);
+      *pos = x;
 
       ++finish_;
       
@@ -285,30 +306,18 @@ public:
   // end() otherwise.
   iterator erase ( const_iterator pos )
   {
-    iterator itr = start_;
     std::destroy_at(pos);
     
-    //catch up to where the position is referrring
-    while(itr != pos)
-    {
-      ++itr;
-    }
-
-    iterator elem_itr = itr;
-
-    //before it reaches finish-1 (since that's the last element)
+    //Question - if we use move, do we have to worry about destryoing elements?
     //shift elements left, so fill void
-    while(itr != end()-1)
-    {
-      std::uninitialized_fill_n(itr, 1, *++itr);
-    }
+    std::move(pos+1, finish_, pos);
 
    --finish_;
 
     //check if the folowing value exists
-    if(elem_itr != nullptr)
+    if(pos != nullptr)
     {
-      return elem_itr;
+      return pos;
     }
     return end();
   }
@@ -349,7 +358,7 @@ public:
   iterator find (const key_type & k )
   {
     //start is the lower bound, finish -1 is the last element position
-    return binarySearch(start_, finish_ - 1, k);
+    return binarySearch(start_, finish_, k);
   }
 
   const_iterator find (const key_type & k) const
@@ -362,10 +371,12 @@ private:
   Key* start_;
   Key* finish_;
   Key* end_;
+  
   void grow(size_type n)
   {
-    Key * new_start_ = static_cast<Key*>(::operator new(n* sizeof(Key)));
+    Key * new_start_ = static_cast<Key*>(::operator new(n * sizeof(Key)));
     size_type old_size = size();
+    // std::cout << n << std::endl;
     try
     {
       std::uninitialized_move(start_, finish_, new_start_);
@@ -377,33 +388,67 @@ private:
     ::operator delete(start_);
     start_ = new_start_;
     finish_ = start_ + old_size;
+    // std::cout << "new n" << n << std::endl;
     end_ = start_ + n;
   }
   
   iterator binarySearch(iterator low, iterator high, const key_type & x)
   {
-    if(high >= low)
-    {
-      auto mid = low + (high -low)/2;
+    //empty container
 
-      //check if the element is found
-      if(*mid == x)
-      {
-        return mid;
-      }
+    // if(high >= low)
+    // {
 
-      //if value is greater than mid
-      if(x > *mid)
-      {
-        return binarySearch(mid+1, high, x);
-      }
+    //     std::cout << low << std::endl;
+    //     std::cout << high << std::endl;
+    //     std::cout << (high-low)/2 << std::endl;
 
-      //if value is smaller than mid
-      return binarySearch(low, mid-1, x);
-    }
+    //     auto mid = (low + high) >>> 1;
+
+    //     std::cout << "outside compare" << std::endl;
+    //     std::cout << x << std::endl;
+    //     std::cout << *mid << std::endl;
+    //     std::cout << "outside done" << std::endl;
+
+    //   //check if the element is found
+    //   if(*mid == x)
+    //   {
+    //     return mid;
+    //   }
+
+    //   //if value is greater/less than mid
+    //   if(Compare()(x,*mid))
+    //   {
+    //     std::cout << "inside compare" << std::endl;
+    //     std::cout << x << std::endl;
+    //     std::cout << *mid << std::endl;
+    //     std::cout << "done" << std::endl;
+        
+    //     return binarySearch(low,mid-1, x);
+    //   }
+
+    //   //if value is less/greater than mid
+    //   return binarySearch(mid+1, high, x);
+    // }
     
-    //did not find anything
-    return end();
+    // //did not find anything
+    // return end();
+    
+
+    // std::cout << x << std::endl;
+    // std::cout << low << std::endl;
+    // std::cout << high << std::endl;
+
+    iterator first = std::lower_bound(low, high, x, Compare());
+
+    // std::cout << first << std::endl;
+
+    if((first == high) || (Compare()(x, *first)));
+    {
+      return end();
+    }
+    return first;
+
   }
 };
 }
