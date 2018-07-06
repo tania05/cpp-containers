@@ -46,6 +46,7 @@ void constructor_tests()
   //checking for set containing elements specified by teh range
   check_int_range();
 
+
   //move construction
   T vals[10] = {1,2,3,4,5,6,7,8,9,0};
   

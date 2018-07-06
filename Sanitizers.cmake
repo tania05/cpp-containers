@@ -10,7 +10,6 @@ if (ENABLE_UBSAN)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=undefined")
 endif()
 
-
 option(ENABLE_LSAN "Initial Leak Sanitizer" false)
 if (ENABLE_LSAN)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak")
