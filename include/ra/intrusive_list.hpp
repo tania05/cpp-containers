@@ -53,9 +53,15 @@ template <class T , list_hook T ::* Hook > class slist_iter {
 public:
         using iterator_category = std::bidirectional_iterator_tag;
         using value_type = typename std::remove_const_t<T>;
+        // using removed_hook = typename std::remove_const<list_hook*>;
+        // using value_type = typename std::remove_const_t<T>;
+        std::remove_const<const char*>::type b;
         using difference_type = std::ptrdiff_t;
         using reference = T&;
         using pointer = T*;
+
+        using list_hook_type = typename std::conditional<std::is_const_v<T>, const list_hook*, list_hook*>::type;
+        
         slist_iter(T* node = nullptr)
         {
           if(node != nullptr)
@@ -63,8 +69,11 @@ public:
             node_ = node.*Hook;
           }
         }
-        slist_iter(list_hook * node = nullptr): node_(node) {}
-
+        
+        slist_iter(list_hook_type node = nullptr): node_(node) {}
+        
+        // slist_iter(const list_hook* node = nullptr): node_(node) {}
+        
         // slist_iter(list_hook node = nullptr): node_(node) {}
 
         template <class OtherT, list_hook OtherT::*OtherHook, class = std::enable_if_t<std::is_convertible_v<OtherT *, T *>>>
@@ -110,7 +119,7 @@ private:
         
         template <class R , list_hook R ::* HookR > friend class list;
         
-        list_hook* node_; // pointer to list node
+        list_hook_type node_; // pointer to list node
 };
 
   // Intrusive doubly-linked list (with sentinel node).
