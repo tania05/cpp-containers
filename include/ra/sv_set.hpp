@@ -263,8 +263,8 @@ public:
     //did not find element
     if(find(x) == end())
     {
-      std::cout << "Did not find elemetn" << std::endl;
-      std::cout << x << std::endl;
+      // std::cout << "Did not find elemetn" << std::endl;
+      // std::cout << x << std::endl;
       
       //to be used for finding where to put the element
       iterator pos = start_;
