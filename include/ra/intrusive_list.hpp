@@ -126,6 +126,7 @@ private:
   // Time complexity: Constant.
   list()
   {
+
     size_ = 0;
   } 
   // Erases any elements from the list and then destroys the list.
@@ -143,12 +144,15 @@ private:
   // Time complexity: Constant.
   list ( list && other )
   {
-    node_.next_ = other.node_.next_;
-    other.node_.next_ = nullptr;
-    node_.prev_ = other.node_.prev_;
-    other.node_.prev_ = nullptr;
+    // node_.next_ = other.node_.next_;
+    // other.node_.next_ = nullptr;
+    // node_.prev_ = other.node_.prev_;
+    // other.node_.prev_ = nullptr;
+    // size_ = other.size_;
+    // other.size_ = 0;
+    node_ = other.node_;
     size_ = other.size_;
-    other.size_ = nullptr;
+    other.clear();
   }
   // Move assignment.
   // The elements in the source list (i.e., other) are moved from
@@ -164,12 +168,9 @@ private:
      if(this != &other)
       {
         clear();
-        node_.next_ = other.node_.next_;
-        other.node_.next_ = nullptr;
-        node_.prev_ = other.node_.prev_;
-        other.node_.prev_ = nullptr;
+        node_ = other.node_;
         size_ = other.size_;
-        other.size_ = nullptr;
+        other.clear();
       }
       return * this;
   }
@@ -181,13 +182,21 @@ private:
   // Time complexity: Constant.
   void swap ( list & x )
   {
-    list tmp(x);
-    x.node_.next_ = node_.next_;
-    node_.next_ = tmp.node_.next_;
-    x.node_.prev_ = node_.prev_;
-    node_.prev_ = tmp.node_.prev_;
-    x.size_ = size_;
-    size = tmp.size_;
+    // list tmp = x;
+    // x.node_.next_ = node_.next_;
+    // node_.next_ = tmp.node_.next_;
+    // x.node_.prev_ = node_.prev_;
+    // node_.prev_ = tmp.node_.prev_;
+    // x.size_ = size_;
+    // size_ = tmp.size_;
+    list_hook tmp = node_;
+    size_type tmp_size = size_;
+
+    node_ = x.node_;
+    size_ = x.size_;
+
+    x.node_ = tmp;
+    x.size_ = tmp_size;
   }
   // Returns the number of elements in the list.
   // Time complexity: Constant.
@@ -277,7 +286,7 @@ private:
   {
     node_.prev_->prev_->next_ = &(node_);
     node_.prev_ = node_.prev_->prev_;
-    --size;
+    --size_;
   }
   // Returns a reference to the last element in the list.
   // Precondition: The list is not empty.
@@ -303,19 +312,27 @@ private:
   // Returns an iterator referring to the first element in the list
   // if the list is not empty and end() otherwise.
   // Time complexity: Constant.
-  const_iterator begin () const
-  {
-    return begin();  
-  }
 
   iterator begin ()
   {
     if(size() != 0)
     {
       // T* parent = ra::util::parent_from_member<T, list_hook>(node_.next_ , Hook);
-      return slist_iter<list_hook>(node_.next_);
+      iterator itr(node_.next_);
+      return itr;
     }
     return end();
+  }
+
+  const_iterator begin () const
+  {
+    if(size() != 0)
+    {
+      // T* parent = ra::util::parent_from_member<T, list_hook>(node_.next_ , Hook);
+      const_iterator itr(node_.next_);
+      return itr;
+    }
+    return end();  
   }
 
   // Returns an iterator referring to the fictitious one-past-the-end
@@ -325,13 +342,15 @@ private:
   
   iterator end ()
   {
-    return slist_iter<list_hook>(&node_);
+    iterator itr(&node_);
+    return itr;
   }
 
 
   const_iterator end () const
   {
-    return end();
+    const_iterator itr(&node_);
+    return itr;
   }
   private:
     list_hook node_;
