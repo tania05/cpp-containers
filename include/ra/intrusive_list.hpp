@@ -65,6 +65,8 @@ public:
         }
         slist_iter(list_hook * node = nullptr): node_(node) {}
 
+        // slist_iter(list_hook node = nullptr): node_(node) {}
+
         template <class OtherT, list_hook OtherT::*OtherHook, class = std::enable_if_t<std::is_convertible_v<OtherT *, T *>>>
           slist_iter(const slist_iter<OtherT, OtherHook>& other) : node_(other.node_) {}
         
