@@ -53,13 +53,10 @@ template <class T , list_hook T ::* Hook > class slist_iter {
 public:
         using iterator_category = std::bidirectional_iterator_tag;
         using value_type = typename std::remove_const_t<T>;
-        // using removed_hook = typename std::remove_const<list_hook*>;
-        // using value_type = typename std::remove_const_t<T>;
-        // std::remove_const<const char*>::type b;
         using difference_type = std::ptrdiff_t;
         using reference = T&;
         using pointer = T*;
-
+        //get conditional parameter based on the type of T
         using list_hook_type = typename std::conditional<std::is_const_v<T>, const list_hook*, list_hook*>::type;
         
         slist_iter(T* node = nullptr)
@@ -70,20 +67,19 @@ public:
           }
         }
         
+        //default with list_hook passed
         slist_iter(list_hook_type node = nullptr): node_(node) {}
         
-        // slist_iter(const list_hook* node = nullptr): node_(node) {}
-        
-        // slist_iter(list_hook node = nullptr): node_(node) {}
-
         template <class OtherT, list_hook OtherT::*OtherHook, class = std::enable_if_t<std::is_convertible_v<OtherT *, T *>>>
           slist_iter(const slist_iter<OtherT, OtherHook>& other) : node_(other.node_) {}
         
+        //the * operator should return T&
         reference operator*() {
           T * parent = ra::util::parent_from_member<T, list_hook>(node_,Hook);
           return *parent;
         }
         
+        // this one should return T*
         pointer operator->() {
           T * parent = ra::util::parent_from_member<T, list_hook>(node_,Hook);
           return parent;
@@ -117,6 +113,7 @@ public:
 private:
         template <class R , list_hook R ::* HookR> friend class slist_iter;
         
+        //to be used for iterator decrements and increments, and access node directly
         template <class R , list_hook R ::* HookR > friend class list;
         
         list_hook_type node_; // pointer to list node
@@ -160,7 +157,6 @@ private:
   ~list ()
   {
     clear();
-    // ::operator delete(&node_);
   }
   // Move construction.
   // The elements in the source list (i.e., other) are moved from
@@ -170,12 +166,6 @@ private:
   // Time complexity: Constant.
   list ( list && other )
   {
-    // node_.next_ = other.node_.next_;
-    // other.node_.next_ = nullptr;
-    // node_.prev_ = other.node_.prev_;
-    // other.node_.prev_ = nullptr;
-    // size_ = other.size_;
-    // other.size_ = 0;
     node_ = other.node_;
     size_ = other.size_;
     other.clear();
@@ -251,6 +241,7 @@ private:
       pos.node_->prev_ = &(value.*hook_ptr);
     }
 
+    //in both cases, return increment size and retun the inserted element
     ++size_;
     return --pos;
   }
@@ -262,7 +253,7 @@ private:
   // Time complexity: Constant.
   iterator erase ( iterator pos )
   {
-    
+    //if no such element exists
     if(pos == end())
     {
       return end();
@@ -278,6 +269,7 @@ private:
   // Time complexity: Constant.
   void push_back ( value_type & x )
   {
+    //emtpyy
     if(size() ==0)
     {
       (x.*hook_ptr).next_ = &(node_);
@@ -312,7 +304,7 @@ private:
   // Time complexity: Constant.
   reference back ()
   {
-
+    //the last element
     return *(--end());
   }
 
