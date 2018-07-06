@@ -47,7 +47,7 @@ void constructor_tests()
   check_int_range();
 
   //move construction
-  T vals[10] = {0,1,2,3,4,5,6,7,8,9};
+  T vals[10] = {1,2,3,4,5,6,7,8,9,0};
   
   sv_set<T> sv2(typename sv_set<T>::ordered_and_unique_range(), vals, 4);
   sv_set<T> svm1(std::move(sv2));
@@ -72,8 +72,10 @@ void constructor_tests()
   assert(svm1.capacity() == 0);
   assert(svm1.begin() == nullptr);
   assert(svm1.begin() == svm2.end());
-  
 
+  std::cout << "Constructor done" << std::endl;  
+  std::cout << *(ma1.begin()) << std::endl;  
+  ma1.erase(ma1.begin());
 }
 
 
@@ -123,11 +125,11 @@ int main()
     sv_set<int, even_then_odd> s3;
 
     // cout << "For loop" << endl;    
-    for (auto&& i : {5, 6, 7, 4, 1, 2, 3, 0}) {
+    for (auto&& i : {5, 6, 7, 4, 1, 2, 3, 8}) {
             // cout << i << endl;
             s1.insert(i);
-            s2.insert(i);
-            s3.insert(i);
+            // s2.insert(i);
+            // s3.insert(i);
     }
     std::cout << "values in ascending order:\n";
     std::copy(s1.begin(), s1.end(),

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
+// #include <utility>
 #include <cassert>
 
 
@@ -252,14 +253,6 @@ public:
   // and first elements set to false and end(), respectively.
   std::pair<iterator,bool> insert (const key_type & x )
   {
-    //empty contaner, make space for at least one element
-    // if(size() == 0)
-    // {
-    //   reserve(1);
-    // }
-
-    // check if there is enough storage to put more elements
-      // std::cout << "Found empty container" << std::endl;
     
     if(finish_ == end_)
     {
@@ -267,12 +260,12 @@ public:
       grow(2 * capacity() + 1);
     }
 
-    // assert(size() == 0);
-    // assert(capacity() == 1);
-
-    //no element found
+    //did not find element
     if(find(x) == end())
     {
+      std::cout << "Did not find elemetn" << std::endl;
+      std::cout << x << std::endl;
+      
       //to be used for finding where to put the element
       iterator pos = start_;
 
@@ -306,18 +299,32 @@ public:
   // end() otherwise.
   iterator erase ( const_iterator pos )
   {
-    std::destroy_at(pos);
+    iterator iter = find(*pos);
+      std::cout << "Constructor done1" << std::endl;  
+  
+    std::cout << "Constructor done2" << std::endl;
     
+    std::destroy_at(iter);
+    std::cout << *iter << std::endl;  
+    std::cout << *(finish_ -1) << std::endl;  
+    std::cout << *(iter +1) << std::endl;  
+    
+
     //Question - if we use move, do we have to worry about destryoing elements?
     //shift elements left, so fill void
-    std::move(pos+1, finish_, pos);
+    std::move(iter+1, finish_, iter);
+    std::cout << "Constructor done3" << std::endl;  
+
+    std::destroy_at(finish_);
+  std::cout << "Constructor done4" << std::endl;  
 
    --finish_;
+  std::cout << "Constructor done5" << std::endl;  
 
     //check if the folowing value exists
-    if(pos != nullptr)
+    if(iter != nullptr)
     {
-      return pos;
+      return iter;
     }
     return end();
   }
@@ -358,7 +365,25 @@ public:
   iterator find (const key_type & k )
   {
     //start is the lower bound, finish -1 is the last element position
-    return binarySearch(start_, finish_, k);
+    iterator first = std::lower_bound(start_, finish_, k, Compare());
+
+    // std::cout << first << std::endl;
+
+    // if(!(first == finish_) && !(Compare()(k, *first)));
+    // {
+    //   return first;
+    // }
+    if( first != finish_)
+    {
+      if(!(Compare()(k, *first)))
+      {
+        return first;        
+      }
+      else{
+        return end();
+      }
+    }
+    return end();
   }
 
   const_iterator find (const key_type & k) const
@@ -394,61 +419,15 @@ private:
   
   iterator binarySearch(iterator low, iterator high, const key_type & x)
   {
-    //empty container
-
-    // if(high >= low)
-    // {
-
-    //     std::cout << low << std::endl;
-    //     std::cout << high << std::endl;
-    //     std::cout << (high-low)/2 << std::endl;
-
-    //     auto mid = (low + high) >>> 1;
-
-    //     std::cout << "outside compare" << std::endl;
-    //     std::cout << x << std::endl;
-    //     std::cout << *mid << std::endl;
-    //     std::cout << "outside done" << std::endl;
-
-    //   //check if the element is found
-    //   if(*mid == x)
-    //   {
-    //     return mid;
-    //   }
-
-    //   //if value is greater/less than mid
-    //   if(Compare()(x,*mid))
-    //   {
-    //     std::cout << "inside compare" << std::endl;
-    //     std::cout << x << std::endl;
-    //     std::cout << *mid << std::endl;
-    //     std::cout << "done" << std::endl;
-        
-    //     return binarySearch(low,mid-1, x);
-    //   }
-
-    //   //if value is less/greater than mid
-    //   return binarySearch(mid+1, high, x);
-    // }
-    
-    // //did not find anything
-    // return end();
-    
-
-    // std::cout << x << std::endl;
-    // std::cout << low << std::endl;
-    // std::cout << high << std::endl;
-
     iterator first = std::lower_bound(low, high, x, Compare());
 
     // std::cout << first << std::endl;
 
-    if((first == high) || (Compare()(x, *first)));
+    if(!(first == high) && !(Compare()(x, *first)));
     {
-      return end();
+      return first;
     }
-    return first;
-
+    return end();
   }
 };
 }
