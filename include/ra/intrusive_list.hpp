@@ -51,9 +51,8 @@ template <class T> struct slist_node_base {
 // single-linked list iterator (const and non-const)
 template <class T> class slist_iter {
 public:
-        using iterator_category = std::forward_iterator_tag;
+        using iterator_category = std::bidirectional_iterator_tag;
         using value_type = typename std::remove_const_t<T>;
-// NOTE: THE FOLLOWING LINE IS NEW!
         using difference_type = std::ptrdiff_t;
         using reference = T&;
         using pointer = T*;
@@ -182,13 +181,6 @@ private:
   // Time complexity: Constant.
   void swap ( list & x )
   {
-    // list tmp = x;
-    // x.node_.next_ = node_.next_;
-    // node_.next_ = tmp.node_.next_;
-    // x.node_.prev_ = node_.prev_;
-    // node_.prev_ = tmp.node_.prev_;
-    // x.size_ = size_;
-    // size_ = tmp.size_;
     list_hook tmp = node_;
     size_type tmp_size = size_;
 
