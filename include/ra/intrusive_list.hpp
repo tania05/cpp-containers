@@ -35,7 +35,7 @@ public:
   template <class T , list_hook T ::* Hook > friend class list;
 
   //make it a friend so we can debug
-  template <class T > friend class slist_iter;
+  template <class T , list_hook T ::* Hook > friend class slist_iter;
   
   list_hook* next_;
   list_hook* prev_;
@@ -43,25 +43,41 @@ public:
 
 
 // singly-linked list node base (for intrusive container)
-template <class T> struct slist_node_base {
-        slist_node_base(T* next_) : next(next_) {}
-        T* next; // pointer to next node in list
-};
+// template <class T> struct slist_node_base {
+//         slist_node_base(T* next_) : next(next_) {}
+//         T* next; // pointer to next node in list
+// };
 
 // single-linked list iterator (const and non-const)
-template <class T> class slist_iter {
+template <class T , list_hook T ::* Hook > class slist_iter {
 public:
         using iterator_category = std::bidirectional_iterator_tag;
         using value_type = typename std::remove_const_t<T>;
         using difference_type = std::ptrdiff_t;
         using reference = T&;
         using pointer = T*;
-        slist_iter(T* node = nullptr) : node_(node) {}
-        template <class OtherT, class =
-          std::enable_if_t<std::is_convertible_v<OtherT*, T*>>>
-          slist_iter(const slist_iter<OtherT>& other) : node_(other.node_) {}
-        reference operator*() {return *node_;}
-        pointer operator->() {return node_;}
+        slist_iter(T* node = nullptr)
+        {
+          if(node != nullptr)
+          {
+            node_ = node.*Hook;
+          }
+        }
+        slist_iter(list_hook * node = nullptr): node_(node) {}
+
+        template <class OtherT, list_hook OtherT::*OtherHook, class = std::enable_if_t<std::is_convertible_v<OtherT *, T *>>>
+          slist_iter(const slist_iter<OtherT, OtherHook>& other) : node_(other.node_) {}
+        
+        reference operator*() {
+          T * parent = ra::util::parent_from_member<T, list_hook>(node_,Hook);
+          return *parent;
+        }
+        
+        pointer operator->() {
+          T * parent = ra::util::parent_from_member<T, list_hook>(node_,Hook);
+          return parent;
+        }
+
         slist_iter& operator++() {
                 node_ = node_->next_;
                 return *this;
@@ -82,17 +98,17 @@ public:
                 node_ = node_->prev_;
                 return old;
         }
-        template <class OtherT> bool operator==(const slist_iter<OtherT>& other)
+        template <class OtherT, list_hook T::* OtherHook> bool operator==(const slist_iter<OtherT, OtherHook>& other)
           const {return node_ == other.node_;}
           
-        template <class OtherT> bool operator!=(const slist_iter<OtherT>& other)
+        template <class OtherT, list_hook T::* OtherHook> bool operator!=(const slist_iter<OtherT,OtherHook>& other)
           const {return !(*this == other);}
 private:
-        template <class> friend class slist_iter;
+        template <class R , list_hook R ::* HookR> friend class slist_iter;
         
-        template <class R , list_hook R ::* Hook > friend class list;
+        template <class R , list_hook R ::* HookR > friend class list;
         
-        T* node_; // pointer to list node
+        list_hook* node_; // pointer to list node
 };
 
   // Intrusive doubly-linked list (with sentinel node).
@@ -112,13 +128,13 @@ private:
   // bidirectional iterator.
   // The Boost Iterator library may be used to implement this
   // type.
-  using iterator = slist_iter<list_hook>;
+  using iterator = slist_iter<T,Hook>;
   // The non-mutating (bidirectional) iterator type for the list.
   // This type must provide all of the functionality of a
   // bidirectional iterator.
   // The Boost Iterator library may be used to implement this
   // type.
-  using const_iterator =  slist_iter<const list_hook>;
+  using const_iterator =  slist_iter<const T, Hook>;
   // An unsigned integral type used to represent sizes.
   using size_type = std::size_t;
   // Creates an empty list.
@@ -285,7 +301,8 @@ private:
   // Time complexity: Constant.
   reference back ()
   {
-    return *(ra::util::parent_from_member<T, list_hook>(node_.prev_ , Hook));
+
+    return *(--end());
   }
 
   const_reference back () const
