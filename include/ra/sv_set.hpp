@@ -334,13 +334,15 @@ public:
   void swap ( sv_set& x) noexcept(
   std::is_nothrow_swappable_v<value_type>)
   {
-    sv_set tmp(x);
+    Key* tmp_start = x.start_; 
+    Key* tmp_finish = x.finish_; 
+    Key* tmp_end = x.end_; 
     x.start_ = start_;
-    start_ = tmp.start_;
+    start_ = tmp_start;
     x.end_ = end_;
-    end_ = tmp.end_;
+    end_ = tmp_end;
     x.finish_ = finish_;
-    finish_ = tmp.finish_;
+    finish_ = tmp_finish;
   }
 
   // // Swaps the contents of the container with the contents of the
@@ -364,15 +366,9 @@ public:
   // is returned; otherwise, end() is returned.
   iterator find (const key_type & k )
   {
-    //start is the lower bound, finish -1 is the last element position
+    //start is the lower bound, finish  is the last element position
     iterator first = std::lower_bound(start_, finish_, k, Compare());
 
-    // std::cout << first << std::endl;
-
-    // if(!(first == finish_) && !(Compare()(k, *first)));
-    // {
-    //   return first;
-    // }
     if( first != finish_)
     {
       if(!(Compare()(k, *first)))
