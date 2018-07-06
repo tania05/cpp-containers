@@ -119,7 +119,7 @@ private:
   // bidirectional iterator.
   // The Boost Iterator library may be used to implement this
   // type.
-  using const_iterator = const slist_iter<list_hook>;
+  using const_iterator =  slist_iter<const list_hook>;
   // An unsigned integral type used to represent sizes.
   using size_type = std::size_t;
   // Creates an empty list.
@@ -211,8 +211,8 @@ private:
 
       node_.next_ = &(value.*hook_ptr);
       node_.prev_ = &(value.*hook_ptr);
-      T val = *(ra::util::parent_from_member<T, list_hook>(node_.prev_ , Hook));
-      std::cout << val.value << std::endl;
+      // T val = *(ra::util::parent_from_member<T, list_hook>(node_.prev_ , Hook));
+      // std::cout << val.value << std::endl;
     }
     else{
       

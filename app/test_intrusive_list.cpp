@@ -5,6 +5,7 @@
 
 namespace ri = ra::intrusive;
 using iterator = ri::slist_iter<ri::list_hook>;
+
 struct Widget {
     Widget (int value_ ) : value(value_) {}
     int value;
@@ -16,6 +17,8 @@ int main()
 {
     std::vector<Widget> storage ;
     storage.push_back(Widget(42));
+
+
     ri::list<Widget, &Widget::hook> values ;
     
     for (auto&& i : storage ) 
@@ -23,7 +26,9 @@ int main()
         values.push_back(i);
     }
 
-
+    ri::list<Widget, &Widget::hook>::const_iterator itr = values.begin();
+    ++itr;
+    itr++;
 
     Widget val = values.back();
     std::cout << val.value << std::endl;

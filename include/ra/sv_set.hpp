@@ -66,7 +66,7 @@ public:
   sv_set ( ordered_and_unique_range , InputIterator first ,
   std::size_t n )
   {
-    start_ = static_cast<Key *>(::operator new(n * sizeof(Key)));
+    start_ = static_cast<Key *>(::operator new(n * sizeof(InputIterator)));
     end_ = start_ + n;
     try
     {
