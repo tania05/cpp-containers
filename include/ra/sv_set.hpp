@@ -305,9 +305,9 @@ public:
     // std::cout << "Constructor done2" << std::endl;
     
     std::destroy_at(iter);
-    std::cout << *iter << std::endl;  
-    std::cout << *(finish_ -1) << std::endl;  
-    std::cout << *(iter +1) << std::endl;  
+    // std::cout << *iter << std::endl;  
+    // std::cout << *(finish_ -1) << std::endl;  
+    // std::cout << *(iter +1) << std::endl;  
     
 
     //Question - if we use move, do we have to worry about destryoing elements?
