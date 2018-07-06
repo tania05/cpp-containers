@@ -163,6 +163,7 @@ public:
   // set if the set is not empty and end() otherwise.
   const_iterator begin () const noexcept
   {
+    //empty container
     if(size() != 0)
     {
       return start_;
@@ -223,17 +224,10 @@ public:
   // the capacity is reduced to the size of the container.
   // Calling this function has no effect if the capacity of the
   // container does not exceed its size.
-  // void shrink_to_fit ()
-  // {
-  //   if(capacity() > size())
-  //   {
-  //       end_ = finish_; 
-  //   }
-  // }
 
-  //TODO: ask the prof if we need to make a new one 
   void shrink_to_fit ()
   {
+    //grow since we are reserving memory
     if(capacity() > size())
     {
         grow(size()); 
@@ -256,15 +250,12 @@ public:
     
     if(finish_ == end_)
     {
-      // std::cout << "Found empty container" << std::endl;
       grow(2 * capacity() + 1);
     }
 
     //did not find element
     if(find(x) == end())
     {
-      // std::cout << "Did not find elemetn" << std::endl;
-      // std::cout << x << std::endl;
       
       //to be used for finding where to put the element
       iterator pos = start_;
@@ -274,9 +265,6 @@ public:
       {
         ++pos;
       }
-
-      // std::cout << "found pos" << std::endl;
-      // std::cout << *pos << std::endl;
       
       //shift elements to make room for the element
       std::move_backward(pos, finish_, finish_+1);
@@ -300,26 +288,16 @@ public:
   iterator erase ( const_iterator pos )
   {
     iterator iter = find(*pos);
-      // std::cout << "Constructor done1" << std::endl;  
-  
-    // std::cout << "Constructor done2" << std::endl;
     
     std::destroy_at(iter);
-    // std::cout << *iter << std::endl;  
-    // std::cout << *(finish_ -1) << std::endl;  
-    // std::cout << *(iter +1) << std::endl;  
-    
 
-    //Question - if we use move, do we have to worry about destryoing elements?
     //shift elements left, so fill void
     std::move(iter+1, finish_, iter);
-    // std::cout << "Constructor done3" << std::endl;  
 
+    //destroy the last guy
     std::destroy_at(finish_);
-  // std::cout << "Constructor done4" << std::endl;  
 
    --finish_;
-  // std::cout << "Constructor done5" << std::endl;  
 
     //check if the folowing value exists
     if(iter != nullptr)
@@ -345,13 +323,6 @@ public:
     finish_ = tmp_finish;
   }
 
-  // // Swaps the contents of the container with the contents of the
-  // // container x.
-  // void swap ( sv_set& x) noexcept(
-  // std::is_nothrow_swappable_v<value_type>)
-  // {
-  //   std::swap(this,x);
-  // }
 
   // Erases any elements in the container, yielding an empty
   // container.
@@ -391,7 +362,6 @@ private:
   {
     Key * new_start_ = static_cast<Key*>(::operator new(n * sizeof(Key)));
     size_type old_size = size();
-    // std::cout << n << std::endl;
     try
     {
       std::uninitialized_move(start_, finish_, new_start_);
@@ -403,15 +373,13 @@ private:
     ::operator delete(start_);
     start_ = new_start_;
     finish_ = start_ + old_size;
-    // std::cout << "new n" << n << std::endl;
     end_ = start_ + n;
   }
   
+  //helper function - may or may not be used
   iterator binarySearch(iterator low, iterator high, const key_type & x)
   {
     iterator first = std::lower_bound(low, high, x, Compare());
-
-    // std::cout << first << std::endl;
 
     if(!(first == high) && !(Compare()(x, *first)));
     {
