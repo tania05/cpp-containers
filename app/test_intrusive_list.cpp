@@ -2,15 +2,21 @@
 #include "ra/intrusive_list.hpp"
 #include <vector>
 #include <utility>
+#include <cassert>
+#include <iterator>
+#include <cstddef>
+#include <type_traits>
+
 
 namespace ri = ra::intrusive;
-using iterator = ri::slist_iter<ri::list_hook>;
 
 struct Widget {
     Widget (int value_ ) : value(value_) {}
     int value;
     ri::list_hook hook;
 };
+
+using iterator = ri::slist_iter<Widget,&Widget::hook>;
 
 
 int main()
@@ -26,24 +32,26 @@ int main()
         values.push_back(i);
     }
 
-    ri::list<Widget, &Widget::hook>::const_iterator itr = values.begin();
+    ri::list<Widget, &Widget::hook> issame ;    
+    ri::list<Widget, &Widget::hook>::iterator itr = issame.begin();
     ++itr;
     itr++;
+
+    // assert(std::is_same_v< typename std::iterator_traits<iterator> >());
+      
 
     Widget val = values.back();
     std::cout << val.value << std::endl;
     
     iterator iter = values.begin();
     
-    val  = *(ra::util::parent_from_member<Widget, ri::list_hook>(&(*iter), &Widget::hook));
     
-    std::cout << val.value << std::endl;
+    std::cout << iter->value << std::endl;
 
     iterator iter2 = values.end();
     ++iter2;
-    val  = *(ra::util::parent_from_member<Widget, ri::list_hook>(&(*iter2), &Widget::hook));
     
-    std::cout << val.value << std::endl;
+    std::cout << iter2->value << std::endl;
 
     std::vector<Widget> storage2 ;
     storage2.push_back(Widget(45));    
@@ -55,17 +63,14 @@ int main()
     {
         iterator iter3 = values2.insert(values2.begin(),ij);
         
-        val  = *(ra::util::parent_from_member<Widget, ri::list_hook>(&(*iter3), &Widget::hook));
-        
-        std::cout << val.value << std::endl;
+        std::cout << iter3->value << std::endl;
 
     }
     
     iterator iter5 = values2.begin();
     while(iter5 != values2.end())
     {   std::cout<< "here" <<std::endl;
-        val  = *(ra::util::parent_from_member<Widget, ri::list_hook>(&(*iter5), &Widget::hook));
-        std::cout << val.value << std::endl;
+        std::cout << iter5->value << std::endl;
         ++iter5;
     }
 

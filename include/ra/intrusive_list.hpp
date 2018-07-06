@@ -55,7 +55,7 @@ public:
         using value_type = typename std::remove_const_t<T>;
         // using removed_hook = typename std::remove_const<list_hook*>;
         // using value_type = typename std::remove_const_t<T>;
-        std::remove_const<const char*>::type b;
+        // std::remove_const<const char*>::type b;
         using difference_type = std::ptrdiff_t;
         using reference = T&;
         using pointer = T*;
